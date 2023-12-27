@@ -13,15 +13,15 @@ Below are shorthand notes and general overview on how I made my own site.
 ## Overview
 
 - Optionally - Purchase a domain using [GoDaddy](https://www.godaddy.com/) Domain: jacobbweber.com
-    > If you do not wish to pay, you can do this for free but your URL will be yourgithubproject.github.io. My domain was so cheap plus the benefit of free email contact@jacobbweber.com, the cool factor seemed worth it. Eventually I will look into using [Cloudflare]([https://](https://www.cloudflare.com/)) as a provider instead of GoDaddy.
+    > If you do not wish to pay, you can do this for free but your URL will be yourgithubproject.github.io. My domain was so cheap plus the benefit of free email contact@jacobbweber.com, the cool factor seemed worth it. Eventually I will look into using [Cloudflare](https://www.cloudflare.com/) as a provider instead of GoDaddy.
     {: .prompt-tip }
 
 - Researched [Jekyll Resources](https://jekyllrb.com/)
-- Github Pages [Gitjub Pages]([https://](https://pages.github.com/)) also see: [Github + Jekyll]([https://](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll))
+- Github Pages [Gitjub Pages](https://pages.github.com/) also see: [Github + Jekyll](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll)
 
 ## Steps
 
-- I chose the free "[Chirpy]([https://](https://chirpy.cotes.page/posts/getting-started/))" jekyll theme - review installation options and choose what works for you.
+- I chose the free "[Chirpy](https://chirpy.cotes.page/posts/getting-started/)" jekyll theme - review installation options and choose what works for you.
 - I created a github project, my project is [jacobbweber.github.io](https://github.com/jacobbweber/jacobbweber.github.io)
 - In the project's Settings
   - Go to "Pages" section
