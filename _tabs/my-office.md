@@ -3,7 +3,7 @@ layout: page
 title: My Office
 icon: fas fa-info-circle
 order: 2
-img_path: /assets/img/
+img_path: /images/
 ---
 
 ## The place I send most of my time.

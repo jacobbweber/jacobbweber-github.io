@@ -3,7 +3,7 @@ layout: page
 title: About
 icon: fas fa-info-circle
 order: 1
-img_path: /assets/img/
+img_path: /images/
 ---
 
 ![myphoto](about-me.jpg)

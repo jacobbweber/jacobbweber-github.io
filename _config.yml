@@ -21,7 +21,7 @@ tagline: Watch me learn!
 description: Watch me learn!
 
 # the avatar on sidebar, support local or CORS resources
-avatar: /assets/img/avatar.jpg
+avatar: /images/avatar.jpg
 
 # Fill in the protocol & hostname for your site.
 # e.g. 'https://username.github.io', note that it does not end with a '/'.
