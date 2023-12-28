@@ -1,8 +1,8 @@
 ---
-layout: page
+layout: post
 title: Cheat Sheets
 icon: fas fa-info-circle
-order: 2
+order: 4
 img_path: /images/
 ---
 
