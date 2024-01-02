@@ -31,6 +31,7 @@ Start-VM -VMName $VMName
 - After logging back in, run the prep-windows.ps1 script again to finish installing WSL.
 
 > I was hung up on the last two steps. It felt weird running the script twice vs having two separate scripts, but the thought of having more files for something so simple seemed worse. So with some conditional logic it just checks if the first steps are done and proceeds.
+ {: .prompt-info }
 
 - After wsl Ubuntu is setup, open Ubuntu from the start menu and setup the first local user.
 - Once logged in, I executed the wsl-config.sh script from its cloned location on windows.
@@ -44,6 +45,7 @@ bash sudo /mnt/c/Users/lab/my-wsl-setup/wsl-config.sh
 > ```bash
 > sed -i 's/\r$//' /mnt/c/Users/lab/my-wsl-setup/wsl-config.sh
 > ```
+ {: .prompt-info }
 
 - Manually updated my git config with my default username and email
 - Manually updated my krb5.conf file to add the default realms for my lab in place of the contoso.com place holders.
