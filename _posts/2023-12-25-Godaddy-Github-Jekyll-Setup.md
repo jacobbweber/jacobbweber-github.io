@@ -6,7 +6,7 @@ categories:
 tags:
 ---
 
-It's been years since I created a website. A decade ago I would have hosted an internal server at home, likely IIS, and made it publicly available. I wanted to find a cheaper and slightly easier solution. After some researh I came across jekyll and github pages. This was perfect for my needs. I could write documentation in markdown stored in github and poof, its a website.
+It's been years since I created a website. A decade ago I would have hosted an internal server at home, likely IIS, and made it publicly available. I wanted to find a cheaper and slightly easier solution. After some research I came across jekyll and github pages. This was perfect for my needs. I could write documentation in markdown stored in github and poof, its a website.
 
 Below are shorthand notes and general overview on how I made my own site.
 
