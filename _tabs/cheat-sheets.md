@@ -7,7 +7,7 @@ img_path: /images/
 toc: true
 ---
 
-My memory recall is that of a goldfish, so I often need to refer to notes/documentation on command usage and sntax. I asked ChatGPT 4 to provide me some cheat sheets. So the contents of this page are a combination of official documentation and my own additions to frequently used commands.
+My memory recall is that of a goldfish, so I often need to refer to notes/documentation on command usage and syntax. I asked ChatGPT 4 to provide me some cheat sheets. So the contents of this page are a combination of official documentation and my own additions to frequently used commands.
 
 ## Minikube
 

@@ -26,7 +26,7 @@ Below are shorthand notes and general overview on how I made my own site.
 - In the project's Settings
   - Go to "Pages" section
     - Change Build and Deployment source, from "Branch", to "Github Actions"
-    - If you bought a custom domain, also configure the "Custom Domain" option on this same page and follow the steps it provids to verify and configure DNS for your domain.
+    - If you bought a custom domain, also configure the "Custom Domain" option on this same page and follow the steps it provides to verify and configure DNS for your domain.
 - Update the _config.yml file to include your own details.
 - Commit your changes and this should trigger the deployment. (Check your github projects deployment progress and output)
 - Navigate to https://yourprojectname.github.io to see your website.

@@ -33,11 +33,11 @@ img_path: /images/
 
 ## Homelabs
 
-Since I have already invested pretty heavily into my Gaming PC. I typically use it to host my lab environments using either Hyper-v or VMware Workstation Pro and GNS3 for virtual networking. There are some great tutorials out there for using Ansible+GNS3 to simulate managing routers/switchs via code. I don't have long running workloads that require constant uptime, so I spin up/down enviornments as needed. For hybrid learning, I extend my local labs into cloud hosting platforms like Azure and AWS when I have trial/credits available.
+Since I have already invested pretty heavily into my Gaming PC. I typically use it to host my lab environments using either Hyper-v or VMware Workstation Pro and GNS3 for virtual networking. There are some great tutorials out there for using Ansible+GNS3 to simulate managing routers/switch's via code. I don't have long running workloads that require constant uptime, so I spin up/down environments as needed. For hybrid learning, I extend my local labs into cloud hosting platforms like Azure and AWS when I have trial/credits available.
 
 Future state, I have considered buying some "Mini PC"s like Intels NUC 12 pro or Asus Expertcenter PN52. The thought was to get 2-4 of them that run ESXi/vSphere  but haven't had a huge need to do it yet.
 
-One of my goals this year (2024) is to put together some labs using automation and all the BuzzOps. The first project I'm going to tackle is located here [homelab-hyperv](https://github.com/jacobbweber/homelab-hyperv), where I plan to use tools like hashicorps packer/terraform and ansible to spin up a windows domain based lab with linux realm joined servers. The goal is to be able to spin up the enviornment and run various playbooks for configuring everything + install other apps like Grafana/Promethus for monitoring.
+One of my goals this year (2024) is to put together some labs using automation and all the BuzzOps. The first project I'm going to tackle is located here [homelab-hyperv](https://github.com/jacobbweber/homelab-hyperv), where I plan to use tools like HashiCorp packer/terraform and ansible to spin up a windows domain based lab with linux realm joined servers. The goal is to be able to spin up the environment and run various playbooks for configuring everything + install other apps like Grafana/Prometheus for monitoring.
 
 From there I can more easily tackle learning new topics of interest more easily having the infrastructure available.
 
