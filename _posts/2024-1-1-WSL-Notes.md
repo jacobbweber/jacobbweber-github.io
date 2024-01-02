@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "My WSL Setup Notes"
+title: "WSL Setup Notes"
 date: 2024-1-1 1:00:00 -0000
 categories:
 tags:
 ---
 
-First day of a new year! I wanted to start it off being productive by doing a little prep work for upcoming hobby projects. I cleaned up old workloads running on my hyper-v host and reinstalled the os on my PC. Fresh year, fresh installs. I went through the process of reinstalling all my stuff having the typical thoughts "Why don't I automate all this". I decided not having everything automated was fine. But setting up a quick WSL2 environment was a little tedious. I usually just go over to my github repo  [my-wsl-setup](https://github.com/jacobbweber/my-wsl-setup) and just copy line by line the commands I need. For my needs this has worked fine, I dont have the most robust or sophisticated WSL setup. But I do typically install Ansible, git, powershell, and dependencies.
+I wanted to start this new year off being productive by doing a little prep work for upcoming hobby projects. I cleaned up old workloads running on my hyper-v host and reinstalled the os on my PC. Fresh year, fresh installs. I went through the process of reinstalling all my stuff having the typical thoughts "Why don't I automate all this". I decided not having everything automated was fine. But setting up a quick WSL2 environment was a little tedious. I usually just go over to my github repo  [my-wsl-setup](https://github.com/jacobbweber/my-wsl-setup) and just copy line by line the commands I need. For my needs this has worked fine, I dont have the most robust or sophisticated WSL setup. But I do typically install Ansible, git, powershell, and dependencies.
 
 I went the route of creating a simple shell script, nothing fancy, but just wanted to start somewhere. After I got the script created I tested in out on a Win11 VM running in hyper-v
 
