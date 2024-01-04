@@ -3,7 +3,7 @@ layout: post
 title: "WSL Setup Notes"
 date: 2024-1-1 1:00:00 -0000
 categories:
-tags: "self-study,homelab"
+tags: [self-study, homelab]
 ---
 
 Github Project: [my-wsl-setup](https://github.com/jacobbweber/my-wsl-setup)

@@ -3,7 +3,7 @@ layout: post
 title: "Creating a self-study website using Godaddy, Github Pages, and Jekyll"
 date: 2023-12-25 9:49:00 -0000
 categories:
-tags: "self-study,homelab"
+tags: [self-study, homelab]
 ---
 
 Github Project: [jacobbweber.github.io](https://github.com/jacobbweber/jacobbweber-github.io)
