@@ -3,8 +3,10 @@ layout: post
 title: "Creating a self-study website using Godaddy, Github Pages, and Jekyll"
 date: 2023-12-25 9:49:00 -0000
 categories:
-tags:
+tags: "self-study","homelab"
 ---
+
+Github Project: [jacobbweber.github.io](https://github.com/jacobbweber/jacobbweber-github.io)
 
 It's been years since I created a website. A decade ago I would have hosted an internal server at home, likely IIS, and made it publicly available. I wanted to find a cheaper and slightly easier solution. After some research I came across jekyll and github pages. This was perfect for my needs. I could write documentation in markdown stored in github and poof, its a website.
 
