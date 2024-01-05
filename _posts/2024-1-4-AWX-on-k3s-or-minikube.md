@@ -27,7 +27,7 @@ While working on this I kept trying to visualize how these components are workin
 **AWX Operator**: A Kubernetes operator for AWX, responsible for deploying and managing AWX instances within the Kubernetes cluster.
 >
 > You can visualize these as three nodes where Minikube is the central node, Kustomize feeds into Minikube to configure the environment, and AWX Operator, deployed on Minikube, manages the AWX instance.
-{: .prompt-note }
+{: .prompt-info }
 
 ### Secrets
 
