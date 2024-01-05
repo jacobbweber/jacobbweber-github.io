@@ -116,7 +116,7 @@ Flannel is a simple and easy-to-use network fabric for Kubernetes, providing sev
 Each backend option has its unique characteristics and performance implications, and the choice depends on the specific needs and constraints of your Kubernetes environment.
 
 Glen Kosaka over at SUSE has a great blog worth checking out.
-[How Kubernetes Networking Works - Under the Hood]([https://www.suse.com/c/advanced-kubernetes-networking/)
+[How Kubernetes Networking Works - Under the Hood](https://www.suse.com/c/advanced-kubernetes-networking/)
 
 
 Thats it for now. As I continue to learn new things on this topic, I will update this post with my thoughts.
