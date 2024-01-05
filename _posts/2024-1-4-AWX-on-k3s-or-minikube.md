@@ -21,18 +21,18 @@ While working on this I kept trying to visualize how these components are workin
 
 The setup involving AWX Operator and Minikube with Kustomize, the workflow looked like this:
 
-> **Minikube or k3s**: Acts as the Kubernetes environment, hosting all other components.
-  **kubectl**: is a command-line tool for interacting with a Kubernetes cluster, allowing you to deploy applications, inspect and manage cluster resources, and view logs. It's a direct interface for the Kubernetes API.
-  **Kustomize**: Used for customizing Kubernetes configurations, relevant for setting up environments in Minikube.
-  **AWX Operator**: A Kubernetes operator for AWX, responsible for deploying and managing AWX instances within the Kubernetes cluster.
-  {: .prompt-info }
+> - **Minikube or k3s**: Acts as the Kubernetes environment, hosting all other components.
+> - **kubectl**: is a command-line tool for interacting with a Kubernetes cluster, allowing you to deploy applications, inspect and manage cluster resources, and view logs. It's a direct interface for the Kubernetes API.
+>  - **Kustomize**: Used for customizing Kubernetes configurations, relevant for setting up environments in Minikube.
+>  - **AWX Operator**: A Kubernetes operator for AWX, responsible for deploying and managing AWX instances within the Kubernetes cluster.
+{: .prompt-info }
 
 You can visualize these as three nodes where Minikube is the central node, Kustomize feeds into Minikube to configure the environment, and AWX Operator, deployed on Minikube, manages the AWX instance.
 
 
 ### Secrets
 
-I learned there are two ways to handle secrets: using individual files and using the SecretGenerator feature in Kustomize.
+In this example I learned there are two ways to handle secrets: using individual files and using the SecretGenerator feature in Kustomize.
 
 1. Individual Files: This method involves creating separate files for each secret. Each secret is defined and stored in its own file, which can then be manually applied to the Kubernetes environment.
 
