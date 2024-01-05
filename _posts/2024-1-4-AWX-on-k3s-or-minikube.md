@@ -4,6 +4,7 @@ title: "AWX on k3s or Minikube"
 date: 2024-1-4 1:00:00 -0000
 categories:
 tags: [self-study]
+mermaid: true
 ---
 
 # Overview
@@ -30,7 +31,32 @@ The setup involving AWX Operator and Minikube with Kustomize, the workflow looke
 > - **AWX Operator**: A Kubernetes operator for AWX, responsible for deploying and managing AWX instances within the Kubernetes cluster.
 {: .prompt-info }
 
-You can visualize these as three nodes where Minikube is the central node, Kustomize feeds into Minikube to configure the environment, and AWX Operator, deployed on Minikube, manages the AWX instance.
+Using mermaid you can create diagrams in markdown easily.
+
+```mermaid
+%%{init:{"theme":"light"}}%%
+sequenceDiagram
+    actor me
+    participant apiSrv as control plane<br><br>api-server
+    participant etcd as control plane<br><br>etcd datastore
+    participant cntrlMgr as control plane<br><br>controller<br>manager
+    participant sched as control plane<br><br>scheduler
+    participant kubelet as node<br><br>kubelet
+    participant container as node<br><br>container<br>runtime
+    me->>apiSrv: 1. kubectl create -f pod.yaml
+    apiSrv-->>etcd: 2. save new state
+    cntrlMgr->>apiSrv: 3. check for changes
+    sched->>apiSrv: 4. watch for unassigned pods(s)
+    apiSrv->>sched: 5. notify about pod w nodename=" "
+    sched->>apiSrv: 6. assign pod to node
+    apiSrv-->>etcd: 7. save new state
+    kubelet->>apiSrv: 8. look for newly assigned pod(s)
+    apiSrv->>kubelet: 9. bind pod to node
+    kubelet->>container: 10. start container
+    kubelet->>apiSrv: 11. update pod status
+    apiSrv-->>etcd: 12. save new state
+```
+
 
 
 ### Secrets
@@ -105,6 +131,22 @@ When using K3s or Kustomize for Kubernetes, several ingress controller options a
 
 Each of these options has its own set of features and configurations, and the best choice depends on your specific requirements and environment.
 
+```mermaid
+graph LR
+ client([client])-. Ingress-managed <br> load balancer .->ingress[Ingress]
+ ingress-->|routing rule|service[Service]
+ subgraph cluster
+ ingress
+ service-->pod1[Pod]
+ service-->pod2[Pod]
+ end
+ classDef plain fill:#ddd,stroke:#fff,stroke-width:4px,color:#000
+ classDef k8s fill:#326ce5,stroke:#fff,stroke-width:4px,color:#fff
+ classDef cluster fill:#fff,stroke:#bbb,stroke-width:2px,color:#326ce5
+ class ingress,service,pod1,pod2 k8s
+ class client plain
+ class cluster cluster
+```
 
 ### Flannel
 
