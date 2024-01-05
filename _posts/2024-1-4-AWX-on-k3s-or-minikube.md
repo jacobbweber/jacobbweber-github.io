@@ -19,15 +19,16 @@ After working through the project and getting it mostly functional, I found it i
 
 While working on this I kept trying to visualize how these components are working together. It helped me to note what each component is for to keep them separate in my mind. And draw some diagrams to refer to along the way. This is an example of how I did that.
 
-> The setup involving AWX Operator and Minikube with Kustomize, the workflow looked like this:
->
+The setup involving AWX Operator and Minikube with Kustomize, the workflow looked like this:
+
 > **Minikube or k3s**: Acts as the Kubernetes environment, hosting all other components.
-> **kubectl**: is a command-line tool for interacting with a Kubernetes cluster, allowing you to deploy applications, inspect and manage cluster resources, and view logs. It's a direct interface for the Kubernetes API.
+**kubectl**: is a command-line tool for interacting with a Kubernetes cluster, allowing you to deploy applications, inspect and manage cluster resources, and view logs. It's a direct interface for the Kubernetes API.
 **Kustomize**: Used for customizing Kubernetes configurations, relevant for setting up environments in Minikube.
 **AWX Operator**: A Kubernetes operator for AWX, responsible for deploying and managing AWX instances within the Kubernetes cluster.
->
-> You can visualize these as three nodes where Minikube is the central node, Kustomize feeds into Minikube to configure the environment, and AWX Operator, deployed on Minikube, manages the AWX instance.
 {: .prompt-info }
+
+You can visualize these as three nodes where Minikube is the central node, Kustomize feeds into Minikube to configure the environment, and AWX Operator, deployed on Minikube, manages the AWX instance.
+
 
 ### Secrets
 
