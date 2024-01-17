@@ -18,47 +18,6 @@ After working through the project and getting it mostly functional, I found it i
 
 ## Thoughts on random things I learned during this project
 
-While working on this I kept trying to visualize how these components are working together. It helped me to note what each component is for to keep them separate in my mind. And draw some diagrams to refer to along the way. This is an example of how I did that.
-
-The setup involving AWX Operator and Minikube with Kustomize, the workflow looked like this:
-
-> - **Minikube or k3s**: Acts as the Kubernetes environment, hosting all other components.
->
-> - **kubectl**: is a command-line tool for interacting with a Kubernetes cluster, allowing you to deploy applications, inspect and manage cluster resources, and view logs. It's a direct interface for the Kubernetes API.
->
-> - **Kustomize**: Used for customizing Kubernetes configurations, relevant for setting up environments in Minikube.
->
-> - **AWX Operator**: A Kubernetes operator for AWX, responsible for deploying and managing AWX instances within the Kubernetes cluster.
-{: .prompt-info }
-
-Using mermaid you can create diagrams in markdown easily.
-
-```mermaid
-%%{init:{"theme":"light"}}%%
-sequenceDiagram
-    actor me
-    participant apiSrv as control plane<br><br>api-server
-    participant etcd as control plane<br><br>etcd datastore
-    participant cntrlMgr as control plane<br><br>controller<br>manager
-    participant sched as control plane<br><br>scheduler
-    participant kubelet as node<br><br>kubelet
-    participant container as node<br><br>container<br>runtime
-    me->>apiSrv: 1. kubectl create -f pod.yaml
-    apiSrv-->>etcd: 2. save new state
-    cntrlMgr->>apiSrv: 3. check for changes
-    sched->>apiSrv: 4. watch for unassigned pods(s)
-    apiSrv->>sched: 5. notify about pod w nodename=" "
-    sched->>apiSrv: 6. assign pod to node
-    apiSrv-->>etcd: 7. save new state
-    kubelet->>apiSrv: 8. look for newly assigned pod(s)
-    apiSrv->>kubelet: 9. bind pod to node
-    kubelet->>container: 10. start container
-    kubelet->>apiSrv: 11. update pod status
-    apiSrv-->>etcd: 12. save new state
-```
-
-
-
 ### Secrets
 
 In this example I learned there are two ways to handle secrets: using individual files and using the SecretGenerator feature in Kustomize.
@@ -164,5 +123,45 @@ Each backend option has its unique characteristics and performance implications,
 Glen Kosaka over at SUSE has a great blog worth checking out.
 [How Kubernetes Networking Works - Under the Hood](https://www.suse.com/c/advanced-kubernetes-networking/)
 
+### Note taking and diagraming
+
+While working on this I kept trying to visualize how these components are working together. It helped me to note what each component is for to keep them separate in my mind. And draw some diagrams to refer to along the way. This is an example of how I did that.
+
+The setup involving AWX Operator and Minikube with Kustomize, the workflow looked like this:
+
+> - **Minikube or k3s**: Acts as the Kubernetes environment, hosting all other components.
+>
+> - **kubectl**: is a command-line tool for interacting with a Kubernetes cluster, allowing you to deploy applications, inspect and manage cluster resources, and view logs. It's a direct interface for the Kubernetes API.
+>
+> - **Kustomize**: Used for customizing Kubernetes configurations, relevant for setting up environments in Minikube.
+>
+> - **AWX Operator**: A Kubernetes operator for AWX, responsible for deploying and managing AWX instances within the Kubernetes cluster.
+{: .prompt-info }
+
+Using mermaid you can create diagrams in markdown easily.
+
+```mermaid
+%%{init:{"theme":"light"}}%%
+sequenceDiagram
+    actor me
+    participant apiSrv as control plane<br><br>api-server
+    participant etcd as control plane<br><br>etcd datastore
+    participant cntrlMgr as control plane<br><br>controller<br>manager
+    participant sched as control plane<br><br>scheduler
+    participant kubelet as node<br><br>kubelet
+    participant container as node<br><br>container<br>runtime
+    me->>apiSrv: 1. kubectl create -f pod.yaml
+    apiSrv-->>etcd: 2. save new state
+    cntrlMgr->>apiSrv: 3. check for changes
+    sched->>apiSrv: 4. watch for unassigned pods(s)
+    apiSrv->>sched: 5. notify about pod w nodename=" "
+    sched->>apiSrv: 6. assign pod to node
+    apiSrv-->>etcd: 7. save new state
+    kubelet->>apiSrv: 8. look for newly assigned pod(s)
+    apiSrv->>kubelet: 9. bind pod to node
+    kubelet->>container: 10. start container
+    kubelet->>apiSrv: 11. update pod status
+    apiSrv-->>etcd: 12. save new state
+```
 
 Thats it for now. As I continue to learn new things on this topic, I will update this post with my thoughts.
