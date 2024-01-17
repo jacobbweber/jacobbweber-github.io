@@ -17,8 +17,8 @@ As IT professionals and enthusiasts, we often find ourselves needing to set up a
 The module offers a range of PowerShell scripts, each serving a specific purpose in the lab setup process:
 
 For setting up and tearing down the lab environment.
-Start-LabCreation
-Start-LabDestruction
+- Start-LabCreation
+- Start-LabDestruction
 
 ## How It Works
 
