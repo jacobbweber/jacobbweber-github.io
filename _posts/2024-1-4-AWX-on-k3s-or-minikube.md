@@ -7,7 +7,6 @@ tags: [self-study]
 mermaid: true
 ---
 
-# Overview
 Github Project: [AWX on K3s or Minikube](https://github.com/jacobbweber/self-study/tree/main/awx-setup)
 
 I have spent some time learning about container orchestration and Kubernetes, but haven't had much opportunity to really dive in and try to apply what I've learned in a simple way. Planning out my future "HomeLab" project I will have the need of some automation tools. I already planned on using Ansible but thought it would be a great reason to setup Ansible (AWX) instead.

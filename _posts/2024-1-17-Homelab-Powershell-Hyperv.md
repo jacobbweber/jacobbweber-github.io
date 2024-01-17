@@ -1,12 +1,10 @@
 ---
 layout: post
-title: "Hyper-V Lab Creation with Powershell"
+title: "Streamlining Hyper-V Lab Creation with PowerShell"
 date: 2024-1-17 1:00:00 -0000
 categories:
 tags: [self-study, homelab, powershell]
 ---
-
-# Streamlining Hyper-V Lab Creation with PowerShell
 
 Github Project: [Powershell-Lab-Hyperv](https://github.com/jacobbweber/self-study/tree/main/Powershell-Lab-Hyperv)
 
