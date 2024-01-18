@@ -7,13 +7,131 @@ tags: [self-study]
 mermaid: true
 ---
 
-Github Project: [AWX on K3s or Minikube](https://github.com/jacobbweber/self-study/tree/main/awx-setup)
+# Overview
 
-I have spent some time learning about container orchestration and Kubernetes, but haven't had much opportunity to really dive in and try to apply what I've learned in a simple way. Planning out my future "HomeLab" project I will have the need of some automation tools. I already planned on using Ansible but thought it would be a great reason to setup Ansible (AWX) instead.
+Github Project: [Learning-AWX-Setup](https://github.com/jacobbweber/learning-awx-setup)
 
-For these learning activities I utilized the "AWX Operator" which is meant to provide a more Kubernetes-native installation method for AWX via an AWX Custom Resource Definition (CRD). And for a Kubernetes learning environment, I used both minikube and k3s which provide a simplified, lightweight Kubernetes environment, ideal for learning and experimentation purposes. Incorporating AWX offered hands-on experience with automation and management of IT systems. This project served as an excellent resource for practical learning in cloud computing, DevOps, and infrastructure automation.
+As I planned my upcoming "HomeLab" project, which requires certain automation tools, I decided not only to use Ansible but also to set up Ansible (AWX), seeing it as an excellent opportunity for setup and learning.
 
-After working through the project and getting it mostly functional, I found it interesting that between minikube and k3s there wasn't much difference in (making it go). At least for as far as I scratched this surface. I was able to pretty quickly setup either minikube or k3s and apply the manifests just as easy between the two. This wasn't immediately obvious to me while choosing a learning environment, but makes sense now.
+I'm sure like many others interested in using AWX, my journey began with an attempt to install it, but surprisingly, it led me to explore Kubernetes instead. In my GitHub project, I've provided a condensed overview of the subjects I'll be discussing in this article. The purpose of this article is to thoroughly document my learning process, including the strategies I employed in this project and the valuable knowledge I acquired.
+
+During these learning activities, I utilized the "AWX Operator", a Kubernetes-native installation method for AWX via an AWX Custom Resource Definition (CRD). To create a learning environment for Kubernetes, I used both minikube and k3s, which are lightweight and simplified Kubernetes environments, perfect for learning and experimentation. Implementing AWX provided me with practical experience in automation and managing IT systems. This project proved to be an invaluable resource for hands-on learning in cloud computing, DevOps, and infrastructure automation.
+
+In my github project there are multiple versions of this deployment.
+- awx-on-minikube: Final setup utilizing everything I learned on the way.
+- examples
+  - v1 - v*: are demonstrating concepts I learned along the way. And these are what I am going to step through in this article.
+
+
+### References
+
+- [minikube](https://minikube.sigs.k8s.io/docs/start/)
+- [kubectl guides](<https://kubectl.docs.kubernetes.io/guides/>)
+- [kubectl Quick Reference](<https://kubernetes.io/docs/reference/kubectl/quick-reference/>)
+- [K3s - Lightweight Kubernetes](https://docs.k3s.io/) @v1.29.0+k3s1
+- [INSTALL.md on ansible/awx](https://github.com/ansible/awx/blob/23.5.1/INSTALL.md) @23.5.1
+- [README.md on ansible/awx-operator](https://github.com/ansible/awx-operator/blob/2.9.0/README.md) @2.9.0
+- [Kurokobo's awx-on-k3s](https://github.com/kurokobo/awx-on-k3s/tree/main)
+
+## Getting Started
+
+After doing some googling and reading over the awx-operator github page, I realized this wasn't going to be quick. After some time I recalled a link a coworker shared with me [Kurokobo's awx-on-k3s](https://github.com/kurokobo/awx-on-k3s/tree/main). This github repo has an excellent tutorial on setting up AWX on k3s. If you just want to run through a setup and have a working AWX instance, I highly recommend using this persons repo. I did that myself initially, just followed his instructions step-by-step and AWX was up and running easy peasy.
+
+This was great to just get started, but I didn't learn much by doing that. I wanted to make sure I understood what each step was for and why he was doing what he was doing. During my studies I used official documentation and his project while creating my own version of it. I found myself  asking, "how was he doing it", "How did he know to do that", or "does it have to be this way"...all sorts of questions but having a working example to refer back to was fantastic. I knew very little starting out, if someone asked me what a Persistent Volume (PV) is for, I would have guessed based on how it sounds. I was humbled by how much more there is to it.
+
+## Starting from Scratch
+
+- Created a github repo
+
+### Picking a learning environment
+
+Before you can deploy AWX you need an instance of kubernetes. I am going to demonstrate how I worked through this project using Minikube on Hyper-V
+
+#### Setup Minikube on Hyper-V
+
+After reviewing the official docs on how to setup Minikube, here are the notes I came up with on the setup.
+
+##### Environment
+
+- Tested on:
+  - Windows 11 Pro
+  - Minikube v1.32.0
+
+
+This would be the minimum. It's that simple.
+
+```powershell
+# Run from an elevated PowerShell prompt.
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+choco install minikube -y
+minikube.exe config set driver hyperv
+```
+
+This is what I ultimately ended up doing for my setup.
+
+```powershell
+# Run from an elevated PowerShell prompt.
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+choco install kubernetes-cli -y
+choco install minikube -y
+minikube.exe config set driver hyperv
+minikube.exe config set cpus 4
+minikube.exe start
+```
+
+> - I found out later, I did not need to install kubernetes (kubectl). Minikube includes kubectl doing so changes your command syntax. Not a huge deal, I wanted it installed anyways.
+>   - Installed: `kubectl command param`
+>   - Not installed: `minikube kubectl command param`.
+> - Learning how to set minikube config I just bumped up my cpu to 4. I have resources to spare.
+{: .prompt-info }
+
+After minikube is started, optionally, run this command to start the dashboard
+
+```powershell
+minikube dashboard
+```
+
+You should now be able to access the minikube dashboard from your internet browser using the link provided in the output of the minikube dashboard command. Leave this terminal running to keep the dashboard up.
+
+In a separate powershell terminal, you can start issuing commands like minikube, kubectl, or kustomize. These commands will directly interact with the minikube instance. You can run the rest of the AWX setup steps from here.
+
+---
+Extra:
+It may seem confusing at first, but due to the type of ingress controller I chose for this project, and its specific requirements, I had to obtain the Minikube IP and alter my local hosts file to direct to the hostname defined in the AWX spec options: awx.example.com. I'll detail this process later, but I wanted to bring it up now as a lead-in to discussing the quick script I use to streamline the process a bit.
+
+
+```powershell
+# Run from an elevated PowerShell prompt.
+minikube.exe start
+minikube.exe addons enable ingress # This was sneaky, I'll explain why I needed this later.
+# Define the new IP address and domain
+$domain = "awx-demo.example.com"
+# Regular expression pattern to match any IP address
+$ipPattern = "\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"
+# Define the file path
+$filePath = "C:\Windows\System32\drivers\etc\hosts"
+# Make a Backup
+Copy-Item -Path $filePath -Destination ($filepath + '_backup')
+# Read the content of the file
+$content = Get-Content -Path $filePath
+write-verbose "Content: $content" -verbose
+$MinikubeIP = minikube.exe ip
+# Check if the new entry already exists
+$newEntry = "$MinikubeIP $domain"
+if (!($content -like "*$domain*")) {
+  write-verbose "No Entry exists so adding one" -verbose
+  Add-Content -Path $FilePath -Value "`n$MinikubeIP` $Domain" -Force
+} else {
+    write-verbose "Entry exists so updating IP to current minikube value $MinikubeIP" -verbose
+  # Replace any IP address followed by spaces and the specific domain with the new IP address
+    $updatedContent = $content -replace "($ipPattern) +$domain", $newEntry
+    # Write the updated content back to the file
+    Set-Content -Path $filePath -Value $updatedContent
+}
+```
+
+## A
+
 
 ## Thoughts on random things I learned during this project
 
@@ -164,3 +282,4 @@ sequenceDiagram
 ```
 
 Thats it for now. As I continue to learn new things on this topic, I will update this post with my thoughts.
+
