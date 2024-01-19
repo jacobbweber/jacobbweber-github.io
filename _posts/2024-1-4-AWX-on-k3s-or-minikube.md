@@ -277,9 +277,11 @@ graph LR
 
 Afte resolving the issue with my ingress conrtoller addon for minikube, and updating my hosts file to match the hostname value I specified in my awx-demo.yaml CRD. I was finally able to get to the AWX landing page and login using my secrets!
 
+## V2
+
 Now that I have a working deployment and have learned a ton. I wanted to do it again but by using SecretsGenerator specified in the `kustomzation.yaml` file
 
-## Secrets using SecretGenerator in Kustomize.
+### Secrets using SecretGenerator in Kustomize.
 
 In Kustomize, secretGenerator is a feature used to create Kubernetes Secret resources dynamically. The secretGenerator allows you to generate these secrets directly within your kustomization.yaml file, without the need to create separate YAML files for each secret.
 
@@ -290,6 +292,7 @@ v1/
 ├── kustomization.yaml
 ├── awx-demo.yml
 ```
+
 The contents of my Secrets specified in individual files were moved into the kustomization.yaml file and looked like this:
 
 ```yaml
@@ -313,130 +316,73 @@ kubectl apply .\examples\v2
 
 Bada Bing, Bada Boom. looks like it worked! There may be more to learn here but for now I was satisfied. Less files to look at is fine with me.
 
-###
+## V3
 
+### Intermittent Errors Deploying AWX
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Thoughts on random things I learned during this project
-
-
-
-### Overlays
-
-In Kustomize, "Bases" and "Overlays" are concepts used to manage and customize Kubernetes configurations:
-
-Bases: These are the foundational configurations, typically the common, core settings required for a Kubernetes application. Bases include the basic resources like Deployments, Services, and ConfigMaps.
-
-Overlays: Overlays are modifications or environment-specific customizations applied to the base. They allow for variations like development, staging, and production configurations, each potentially having different resource requirements, environment variables, etc.
-
-I plan to implement this functionality in a more complete version of this project where I would use Bases and Overlays for the AWX operator with a dev and production environment, my file/folder structure could look like this:
-
-Base Directory: Contains common configurations for both environments.
+It took awhile to realize at the time that I was getting errors in my deployment, requiring me to run kubectl apply twice. Here is what I was seeing in my output.
 
 ```shell
-base/
-├── kustomization.yaml
-├── deployment.yaml
-├── service.yaml
+namespace/awx-demo created
+customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
+customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
+customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
+serviceaccount/awx-operator-controller-manager created
+role.rbac.authorization.k8s.io/awx-operator-awx-manager-role created
+role.rbac.authorization.k8s.io/awx-operator-leader-election-role created
+clusterrole.rbac.authorization.k8s.io/awx-operator-metrics-reader created
+clusterrole.rbac.authorization.k8s.io/awx-operator-proxy-role created
+rolebinding.rbac.authorization.k8s.io/awx-operator-awx-manager-rolebinding created
+rolebinding.rbac.authorization.k8s.io/awx-operator-leader-election-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/awx-operator-proxy-rolebinding created
+configmap/awx-operator-awx-manager-config created
+secret/awx-admin-password created
+secret/awx-custom-secret-key created
+service/awx-operator-controller-manager-metrics-service created
+deployment.apps/awx-operator-controller-manager created
+error: resource mapping not found for name: "awx" namespace: "awx-demo" from ".\\examples\\v2": no matches for kind "AWX" in version "awx.ansible.com/v1beta1"
+ensure CRDs are installed first
 ```
 
-Dev Overlay: Customizes the base for the development environment.
+After doing some research I learned in Kubernetes, a CRD needs to be created before any custom resources based on that CRD can be deployed. This is because the CRD defines the schema used by the Kubernetes API to understand and manage the custom resource.
+
+Since I was specifying both in one file "The Image for AWX-Operator and the AWX CRD" Sometimes the AWX-Operator deployment would finish fast enough and sometimes it wouldn't, which is why I was getting this intermittently in my testing.
+
+To work around this issue, I needed to deploy AWX-Operator first, and then AWX in a 2 step deployment.
+
+To do that, I created to seperate folders, 
+
 
 ```shell
-overlays/
-├── dev/
+v3/
+├── base/
 │   ├── kustomization.yaml
-│   ├── dev-specific-config.yaml
+│   ├── awx-demo.yaml
+├── operator/
+│   ├── kustomization.yaml
 ```
 
-Production Overlay: Customizes the base for the production environment.
+ - Deploy AWX-Operator
 
-```shell
-├── prod/
-    ├── kustomization.yaml
-    ├── prod-specific-config.yaml
+```powershell
+kubectl apply -k .\examples\v3\operator
 ```
 
-In overlays/dev/kustomization.yaml and overlays/prod/kustomization.yaml, you'd reference the base and include environment-specific modifications. This structure allows you to manage common configurations in the base while maintaining environment-specific adjustments in the overlays.
+Verify CRD Installation: After applying the CRD manifest, you can verify the installation by running the following command:
 
+This command should return the AWX CRD if it's installed correctly.
 
-
-### Flannel
-
-While researching the k3s installation script they provide, I saw a few references and some examples specifying flannel-options as optional command line parameters. It turns out this wasn't anything to do with a flannel shirt like I was picturing in my head.
-
-Flannel is a simple and easy-to-use network fabric for Kubernetes, providing several backend options to fit different network requirements:
-
-- VXLAN: The default backend, it encapsulates network traffic in a virtual network over the existing network infrastructure.
-- Host-gw: Creates a simple route-based network, providing efficient traffic routing.
-- UDP: An older backend, using UDP to encapsulate traffic, less efficient and generally not recommended.
-- AWS VPC: Integrates directly with the AWS VPC network, for AWS-hosted Kubernetes clusters.
-
-Each backend option has its unique characteristics and performance implications, and the choice depends on the specific needs and constraints of your Kubernetes environment.
-
-Glen Kosaka over at SUSE has a great blog worth checking out.
-[How Kubernetes Networking Works - Under the Hood](https://www.suse.com/c/advanced-kubernetes-networking/)
-
-### Note taking and diagraming
-
-While working on this I kept trying to visualize how these components are working together. It helped me to note what each component is for to keep them separate in my mind. And draw some diagrams to refer to along the way. This is an example of how I did that.
-
-The setup involving AWX Operator and Minikube with Kustomize, the workflow looked like this:
-
-> - **Minikube or k3s**: Acts as the Kubernetes environment, hosting all other components.
->
-> - **kubectl**: is a command-line tool for interacting with a Kubernetes cluster, allowing you to deploy applications, inspect and manage cluster resources, and view logs. It's a direct interface for the Kubernetes API.
->
-> - **Kustomize**: Used for customizing Kubernetes configurations, relevant for setting up environments in Minikube.
->
-> - **AWX Operator**: A Kubernetes operator for AWX, responsible for deploying and managing AWX instances within the Kubernetes cluster.
-{: .prompt-info }
-
-Using mermaid you can create diagrams in markdown easily.
-
-```mermaid
-%%{init:{"theme":"light"}}%%
-sequenceDiagram
-    actor me
-    participant apiSrv as control plane<br><br>api-server
-    participant etcd as control plane<br><br>etcd datastore
-    participant cntrlMgr as control plane<br><br>controller<br>manager
-    participant sched as control plane<br><br>scheduler
-    participant kubelet as node<br><br>kubelet
-    participant container as node<br><br>container<br>runtime
-    me->>apiSrv: 1. kubectl create -f pod.yaml
-    apiSrv-->>etcd: 2. save new state
-    cntrlMgr->>apiSrv: 3. check for changes
-    sched->>apiSrv: 4. watch for unassigned pods(s)
-    apiSrv->>sched: 5. notify about pod w nodename=" "
-    sched->>apiSrv: 6. assign pod to node
-    apiSrv-->>etcd: 7. save new state
-    kubelet->>apiSrv: 8. look for newly assigned pod(s)
-    apiSrv->>kubelet: 9. bind pod to node
-    kubelet->>container: 10. start container
-    kubelet->>apiSrv: 11. update pod status
-    apiSrv-->>etcd: 12. save new state
+```powershell
+kubectl get crd awxs.awx.ansible.com
 ```
 
-Thats it for now. As I continue to learn new things on this topic, I will update this post with my thoughts.
+```powershell
+NAME                   CREATED AT
+awxs.awx.ansible.com   2024-01-19T13:47:39Z
+```
 
+- Deploy AWX
+
+```powershell
+kubectl apply -k .\examples\v3\base
+```
