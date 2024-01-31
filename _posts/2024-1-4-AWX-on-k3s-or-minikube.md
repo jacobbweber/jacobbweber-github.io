@@ -389,7 +389,7 @@ kubectl apply -k .\examples\v3\base
 
 ## V4
 
-After learning about the two step deployment and having a working AWX instnace, I wanted to learn more about backing it up and restoring it. I saw examples utilizing Persistent Volumes (PVs) and Persistent Volume Claims (PVCs) along with the AWXBackup resource. I didn't initially understand these at all, "What are these PV files for"...
+After learning about the two step deployment and having a working AWX instance, I wanted to learn more about backing it up and restoring it. I saw examples utilizing Persistent Volumes (PVs) and Persistent Volume Claims (PVCs) along with the AWXBackup resource. I didn't initially understand these at all, "What are these PV files for"...
 
 ### What are PVs and PVCs
 
@@ -402,7 +402,7 @@ After learning about the two step deployment and having a working AWX instnace, 
 
 ### PVs on Minikube
 
-Reading the minikube documentation, it supports Persistent Volumes of type `hostPath` out of the box. By default they are mapped to a directory inside the running minikube instance `/data*` is one of the default directories, which I decided to utilize.
+Reading the minikube documentation, it supports Persistent Volumes of type `hostPath` out of the box. By default they are mapped to a directory inside the running minikube instance, `/data*` is one of the default directories, which I decided to utilize.
 
 I did read a little on using `minikube mount` to mount local host storage to the minikube instance. Something I wanted to note for future projects, but for now I was fine with leaving the data in the minikube vm.
 
@@ -452,7 +452,7 @@ spec:
 
 We need to add this additional resource to the kustomization.yaml file.
 
-```shell
+```yaml
 resources:
   - awx-demo.yml
   - pv.yml
@@ -497,7 +497,7 @@ v4/
 
 pvc.yaml file:
 
-```shell
+```yaml
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
