@@ -344,7 +344,7 @@ error: resource mapping not found for name: "awx" namespace: "awx-demo" from ".\
 ensure CRDs are installed first
 ```
 
-After doing some research I learned in Kubernetes, a CRD needs to be created before any custom resources based on that CRD can be deployed. This is because the CRD defines the schema used by the Kubernetes API to understand and manage the custom resource.
+After doing some research I learned in Kubernetes, a CRD may need to be created before any custom resources based on that CRD can be deployed. This is because the CRD defines the schema used by the Kubernetes API to understand and manage the custom resource.
 
 Since I was specifying both in one file "The Image for AWX-Operator and the AWX CRD" Sometimes the AWX-Operator deployment would finish fast enough and sometimes it wouldn't, which is why I was getting this intermittently in my testing.
 
@@ -386,3 +386,231 @@ awxs.awx.ansible.com   2024-01-19T13:47:39Z
 ```powershell
 kubectl apply -k .\examples\v3\base
 ```
+
+## V4
+
+After learning about the two step deployment and having a working AWX instnace, I wanted to learn more about backing it up and restoring it. I saw examples utilizing Persistent Volumes (PVs) and Persistent Volume Claims (PVCs) along with the AWXBackup resource. I didn't initially understand these at all, "What are these PV files for"...
+
+### What are PVs and PVCs
+
+- A **PersistentVolume (PV)** is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
+
+- A **PersistentVolumeClaim (PVC)** is a request for storage by a user.
+
+> Read more about this topic using the official kubernetes documenation, under storage.
+ {: .prompt-info }
+
+### PVs on Minikube
+
+Reading the minikube documentation, it supports Persistent Volumes of type `hostPath` out of the box. By default they are mapped to a directory inside the running minikube instance `/data*` is one of the default directories, which I decided to utilize.
+
+I did read a little on using `minikube mount` to mount local host storage to the minikube instance. Something I wanted to note for future projects, but for now I was fine with leaving the data in the minikube vm.
+
+
+### Getting Started
+
+After hours of reading I still didnt feel like I was grasping how to do any of it, so I wiped my minikube instance and started from scratch again so I could step through it. Same steps as before.
+
+ - Deploy AWX-Operator
+
+```powershell
+kubectl apply -k .\examples\v4\operator
+```
+
+This time, I knew I wanted to create a PV. So after looking at kubernetes/minikubes documentation and kurokobo's example project I made a pv.yml file in the base folder
+
+```shell
+v4/
+├── base/
+│   ├── kustomization.yaml
+│   ├── awx-demo.yaml
+│   ├── pv.yaml
+├── operator/
+│   ├── kustomization.yaml
+```
+
+Here is its contents:
+
+```yaml
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: backup-pv
+  labels:
+    purpose: backup-pv
+  annotations:
+    description: "learning pv and pvcs"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /data/backup/
+```
+
+We need to add this additional resource to the kustomization.yaml file.
+
+```shell
+resources:
+  - awx-demo.yml
+  - pv.yml
+```
+
+- Deploy AWX
+
+```powershell
+kubectl apply -k .\examples\v4\base
+```
+
+- Now that we deployed AWX and the PV which was included as a resource in the kustomization.yaml file. We can verify our PV exists:
+
+```powershell
+kubectl get persistentvolume -n awx-demo
+```
+
+```powershell
+# output
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                                    STORAGECLASS   REASON   AGE
+backup-pv                                  5Gi        RWO            Retain           Available                                                                    16s
+pvc-07c4d1b0-a1d6-4055-9459-6feb4be137f0   8Gi        RWO            Delete           Bound       awx-demo/postgres-13-awx-postgres-13-0   standard                9s
+```
+
+Yay, we have a PV. Before we can really take advantage of having it, we need to create the AWXBackup resource. I had to use the offical AWX-Operator documenation to create the files.
+
+Folder Structure:
+
+```shell
+v4/
+├── backup/
+│   ├── kustomization.yaml
+│   ├── backup-awx.yaml
+│   ├── pvc.yaml
+├── base/
+│   ├── kustomization.yaml
+│   ├── awx-demo.yaml
+│   ├── pv.yaml
+├── operator/
+│   ├── kustomization.yaml
+```
+
+pvc.yaml file:
+
+```shell
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-pv1-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ""
+  selector:
+    matchLabels:
+      purpose: backup-pv
+```
+
+Now we have our Persistent Volume Claim (PVC) ready to deploy. This will create our PVC and assign it to the PV we created earlier.
+
+```powershell
+kubectl apply -k .\examples\v4\backup
+```
+
+To verify it worked you can run:
+
+```powerhsell
+kubectl get persistentvolume -n awx-demo
+```
+
+You can see the backup-pv has a bound status to the claim backup-pv1-claim
+
+```shell
+# output
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                    STORAGECLASS   REASON   AGE
+backup-pv                                  5Gi        RWO            Retain           Bound    awx-demo/backup-pv1-claim                                        10s
+pvc-07c4d1b0-a1d6-4055-9459-6feb4be137f0   8Gi        RWO            Delete           Bound    awx-demo/postgres-13-awx-postgres-13-0   standard                51m
+```
+
+> It was very interesting learning how a PVC gets matched to a PV. By default, if no matches are found it may use the first PV that is available. In my example, I included a label and annotation to the PV resource. I am matching my PVC by using "Selector matchLabels" in the PVC spec options.
+ {: .prompt-info }
+
+- Deploy the AWX CRD 
+
+In my backup-awx.yaml file, I specify the name of our PVC we created earlier. This is what tells the AWXBackup resource to utilize that specific claim bound to our earlier created pv.
+
+```yaml
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWXBackup
+metadata:
+  name: awxbackup-2024-01-16
+  namespace: awx-demo
+spec:
+  deployment_name: awx
+  backup_pvc: backup-pv1-claim
+```
+
+```powershell
+kubectl apply -f .\examples\v4\backup\backup-awx.yml
+```
+
+- To view the logs real time, run this command.
+
+```shell
+kubectl -n awx-demo logs -f deployments/awx-operator-controller-manager
+```
+
+After the backup is complete, you should see an output similar to this
+
+```Powershell
+PLAY RECAP *********************************************************************
+localhost                  : ok=7    changed=0    unreachable=0    failed=0    skipped=9    rescued=0    ignored=0
+```
+
+Or alternatively, use the minikube dashboard and click your namespace to see the events there.
+
+Next you can use `minikube ssh` from an elevated powershell to verify the backup was created.
+
+```powershell
+minikube ssh
+```
+
+```powershell
+# output
+PS C:\Users> minikube ssh
+                         _             _
+            _         _ ( )           ( )
+  ___ ___  (_)  ___  (_)| |/')  _   _ | |_      __
+/' _ ` _ `\| |/' _ `\| || , <  ( ) ( )| '_`\  /'__`\
+| ( ) ( ) || || ( ) || || |\`\ | (_) || |_) )(  ___/
+(_) (_) (_)(_)(_) (_)(_)(_) (_)`\___/'(_,__/'`\____)
+
+$ ls /data/backup
+tower-openshift-backup-2024-01-30-212329
+```
+
+So now we have finally deployed the AWX Operator, AWX, a PV, PVC, and created an AWX Backup.
+
+There was a lot to learn regarding PVs and PVCs. I saw plenty of examples out there but was really hung up on a few things. Some maybe less important than others.
+
+1. How does the PVC know which PV to use.
+2. Why does the PV need to exist in the folder it was in and why deploy it with the AWX resource.
+3. When do I need to create a storageclass for my PVs to use.
+4. How would I use dynamic PVs
+5. the list goes on.
+
+I took a long break from this to learn more in general, but ultimately got to a point where it would make more sense learning about the other options when I have the use case. For now, I feel confident in my understanding on how the PV and PVCs work with minikube for this learning effort.
+
+One little test I walked through that helped while doing this was to create multiple PVs, and then multiple PVCs to see how matching took place. Some of them I would include labels and annotations, some I wouldnt. This way I could see how to specifically match a PVC to a specific PV if the need ever came.
+
+#### Restore AWX using existing backup
+
+## V5
+
+### Bases, Overlays, and Patches
