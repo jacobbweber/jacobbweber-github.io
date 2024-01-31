@@ -609,7 +609,7 @@ I took a long break from this to learn more in general, but ultimately got to a 
 
 One little test I walked through that helped while doing this was to create multiple PVs, and then multiple PVCs to see how matching took place. Some of them I would include labels and annotations, some I wouldnt. This way I could see how to specifically match a PVC to a specific PV if the need ever came.
 
-#### Restore AWX using existing backup
+In V4 I walked through the steps to perform the restore, but didn't feel there was much to cover on that topic. It was pretty easy to walk through using offical docs.
 
 ## V5
 
