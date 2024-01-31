@@ -58,7 +58,7 @@ After reviewing the official docs on how to setup Minikube, here are the notes I
 This would be the minimum. It's that simple.
 
 ```powershell
-# Run from an elevated PowerShell prompt.
+# Run from an elevated powershell prompt.
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 choco install minikube -y
 minikube.exe config set driver hyperv
@@ -67,7 +67,7 @@ minikube.exe config set driver hyperv
 This is what I ultimately ended up doing for my setup.
 
 ```powershell
-# Run from an elevated PowerShell prompt.
+# Run from an elevated powershell prompt.
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 choco install kubernetes-cli -y
 choco install minikube -y
@@ -97,7 +97,7 @@ Extra:
 It may seem confusing at first, but due to the type of ingress controller I chose for this project, and its specific requirements, I had to obtain the Minikube IP and alter my local hosts file to direct to the hostname defined in the AWX spec options: awx.example.com. I'll detail this process later, but I wanted to bring it up now since its related to how I start minikube. This is the script I use to start minikube while im working with this project specifically.
 
 ```powershell
-# Run from an elevated PowerShell prompt.
+# Run from an elevated powershell prompt.
 minikube.exe start
 minikube.exe addons enable ingress # This was sneaky, I'll explain why I needed this later.
 # Define the new IP address and domain
@@ -139,7 +139,7 @@ Settle in with a drink. This is the part where my learning curve steepened, as I
 
 ### File and Folder Structure
 
-```shell
+```powershell
 v1/
 ├── kustomization.yaml
 ├── awx_admin_secret.yml
@@ -287,7 +287,7 @@ In Kustomize, secretGenerator is a feature used to create Kubernetes Secret reso
 
 My new folder structure looks like this
 
-```shell
+```powershell
 v1/
 ├── kustomization.yaml
 ├── awx-demo.yml
@@ -322,7 +322,7 @@ Bada Bing, Bada Boom. looks like it worked! There may be more to learn here but 
 
 It took awhile to realize at the time that I was getting errors in my deployment, requiring me to run kubectl apply twice. Here is what I was seeing in my output.
 
-```shell
+```powershell
 namespace/awx-demo created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
@@ -353,7 +353,7 @@ To work around this issue, I needed to deploy AWX-Operator first, and then AWX i
 To do that, I created to seperate folders, 
 
 
-```shell
+```powershell
 v3/
 ├── base/
 │   ├── kustomization.yaml
@@ -419,7 +419,7 @@ kubectl apply -k .\examples\v4\operator
 
 This time, I knew I wanted to create a PV. So after looking at kubernetes/minikubes documentation and kurokobo's example project I made a pv.yml file in the base folder
 
-```shell
+```powershell
 v4/
 ├── base/
 │   ├── kustomization.yaml
@@ -481,7 +481,7 @@ Yay, we have a PV. Before we can really take advantage of having it, we need to 
 
 Folder Structure:
 
-```shell
+```powershell
 v4/
 ├── backup/
 │   ├── kustomization.yaml
@@ -524,13 +524,13 @@ kubectl apply -k .\examples\v4\backup
 
 To verify it worked you can run:
 
-```powerhsell
+```powershell
 kubectl get persistentvolume -n awx-demo
 ```
 
 You can see the backup-pv has a bound status to the claim backup-pv1-claim
 
-```shell
+```powershell
 # output
 NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                    STORAGECLASS   REASON   AGE
 backup-pv                                  5Gi        RWO            Retain           Bound    awx-demo/backup-pv1-claim                                        10s
@@ -562,13 +562,13 @@ kubectl apply -f .\examples\v4\backup\backup-awx.yml
 
 - To view the logs real time, run this command.
 
-```shell
+```powershell
 kubectl -n awx-demo logs -f deployments/awx-operator-controller-manager
 ```
 
 After the backup is complete, you should see an output similar to this
 
-```Powershell
+```powershell
 PLAY RECAP *********************************************************************
 localhost                  : ok=7    changed=0    unreachable=0    failed=0    skipped=9    rescued=0    ignored=0
 ```
