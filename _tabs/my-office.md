@@ -6,7 +6,7 @@ order: 2
 img_path: /images/
 ---
 
-## The place I send most of my time.
+## The place I spend most of my time.
 
 ![myphoto](my-office.jpg)
 
@@ -37,7 +37,7 @@ Since I have already invested pretty heavily into my Gaming PC. I typically use 
 
 Future state, I have considered buying some "Mini PC"s like Intels NUC 12 pro or Asus Expertcenter PN52. The thought was to get 2-4 of them that run ESXi/vSphere  but haven't had a huge need to do it yet.
 
-One of my goals this year (2024) is to put together some labs using automation and all the BuzzOps. The first project I'm going to tackle is located here [homelab-hyperv](https://github.com/jacobbweber/homelab-hyperv), where I plan to use tools like HashiCorp packer/terraform and ansible to spin up a windows domain based lab with linux realm joined servers. The goal is to be able to spin up the environment and run various playbooks for configuring everything + install other apps like Grafana/Prometheus for monitoring.
+One of my goals this year (2024) is to put together some labs using automation and all the BuzzOps. The first project I'm going to tackle is located here [Homelab](https://github.com/jacobbweber/homelab), where I plan to use tools like HashiCorp packer/terraform and ansible to spin up a windows domain based lab with linux realm joined servers. The goal is to be able to spin up the environment and run various playbooks for configuring everything + install other apps like Grafana/Prometheus for monitoring.
 
 From there I can more easily tackle learning new topics of interest more easily having the infrastructure available.
 
