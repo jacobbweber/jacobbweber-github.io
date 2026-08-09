@@ -8,7 +8,7 @@ tags: [ai, learning, architecture]
 
 # What I Worked On, My Thoughts & Findings
 
-I spent the last few weeks engineering a deterministic runtime container for autonomous LLM agents. The goal was to strip away agentic buzzwords and map them directly to standard software primitives. I built a pluggable harness that manages lifecycle hooks, enforces sandbox isolation, and routes capabilities via MCP. Below is the technical breakdown of how I wired it together.
+I spent the last few weeks engineering a deterministic runtime container for autonomous LLM agents. Following my typical theme. the goal was to strip away agentic buzzwords and map them directly to standard software primitives. I built a pluggable harness that manages lifecycle hooks, enforces sandbox isolation, and routes capabilities via MCP. Below is the technical breakdown of how I wired it together.
 
 ## Data & Technical Facts
 
